@@ -1,7 +1,10 @@
 {
   "name": "Hadoop Spark Environment",
-  "dockerFile": "../docker/Dockerfile",
+  "build": {
+    "dockerfile": "../docker/Dockerfile",
+    "context": ".."
+  },
   "forwardPorts": [9870, 8088, 4040, 18080],
-  "postStartCommand": "sudo /usr/local/bin/start-services.sh",
+  "postStartCommand": "bash -c 'sudo /usr/local/bin/start-services.sh || true'",
   "remoteUser": "root"
 }
