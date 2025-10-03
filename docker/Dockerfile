@@ -20,10 +20,10 @@ RUN wget https://dlcdn.apache.org/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-
     mv /opt/hadoop-${HADOOP_VERSION} ${HADOOP_HOME} && \
     rm hadoop-${HADOOP_VERSION}.tar.gz
 
-# Install Spark
-ENV SPARK_VERSION=3.5.1
+# Install Spark (using archive.apache.org for stability)
+ENV SPARK_VERSION=3.5.0
 ENV SPARK_HOME=/opt/spark
-RUN wget https://dlcdn.apache.org/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.tgz && \
+RUN wget https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.tgz && \
     tar -xzf spark-${SPARK_VERSION}-bin-hadoop3.tgz -C /opt && \
     mv /opt/spark-${SPARK_VERSION}-bin-hadoop3 ${SPARK_HOME} && \
     rm spark-${SPARK_VERSION}-bin-hadoop3.tgz
@@ -53,16 +53,17 @@ ENV HADOOP_CLASSPATH=$HADOOP_HOME/share/hadoop/tools/lib/*:$HADOOP_CLASSPATH
 RUN rm -f $HIVE_HOME/lib/guava-19.0.jar && \
     cp $HADOOP_HOME/share/hadoop/hdfs/lib/guava-27.0-jre.jar $HIVE_HOME/lib/
 
-# Download Spark-Kafka connector
+# Download Spark-Kafka connector (matching Spark 3.5.0)
 RUN cd $SPARK_HOME/jars && \
-    wget https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.12/3.5.1/spark-sql-kafka-0-10_2.12-3.5.1.jar && \
+    wget https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.12/3.5.0/spark-sql-kafka-0-10_2.12-3.5.0.jar && \
     wget https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/3.4.1/kafka-clients-3.4.1.jar && \
     wget https://repo1.maven.org/maven2/org/apache/commons/commons-pool2/2.11.1/commons-pool2-2.11.1.jar
 
 # Setup SSH (required for Hadoop)
 RUN ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa && \
     cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys && \
-    chmod 600 ~/.ssh/authorized_keys
+    chmod 600 ~/.ssh/authorized_keys && \
+    echo "Host *\n  StrictHostKeyChecking no\n  UserKnownHostsFile=/dev/null" > ~/.ssh/config
 
 # Copy startup script
 COPY start-services.sh /usr/local/bin/
