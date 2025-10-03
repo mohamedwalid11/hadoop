@@ -5,39 +5,37 @@ USER root
 
 # Install additional tools
 RUN apt-get update && \
-    apt-get install -y wget curl ssh sudo python3-pip && \
-    apt-get clean
+    apt-get install -y --no-install-recommends wget curl ssh sudo python3-pip && \
+    apt-get clean && \
+    rm -rf /var/lib/apt/lists/*
 
-# Install Kafka (much faster - just Kafka)
+# Install Kafka (KRaft mode - no ZooKeeper needed)
 ENV KAFKA_VERSION=3.6.0
 ENV KAFKA_HOME=/opt/kafka
-RUN wget https://archive.apache.org/dist/kafka/3.6.0/kafka_2.13-3.6.0.tgz && \
-    tar -xzf kafka_2.13-3.6.0.tgz -C /opt && \
-    mv /opt/kafka_2.13-3.6.0 /opt/kafka && \
-    rm kafka_2.13-3.6.0.tgz
+RUN wget https://archive.apache.org/dist/kafka/${KAFKA_VERSION}/kafka_2.13-${KAFKA_VERSION}.tgz && \
+    tar -xzf kafka_2.13-${KAFKA_VERSION}.tgz -C /opt && \
+    mv /opt/kafka_2.13-${KAFKA_VERSION} ${KAFKA_HOME} && \
+    rm kafka_2.13-${KAFKA_VERSION}.tgz
 
-# Install Hive (lightweight)
-ENV HIVE_VERSION=3.1.3
-ENV HIVE_HOME=/opt/hive
-RUN wget https://archive.apache.org/dist/hive/hive-3.1.3/apache-hive-3.1.3-bin.tar.gz && \
-    tar -xzf apache-hive-3.1.3-bin.tar.gz -C /opt && \
-    mv /opt/apache-hive-3.1.3-bin /opt/hive && \
-    rm apache-hive-3.1.3-bin.tar.gz
+# Set PATH (prepend Kafka bin to existing PATH)
+ENV PATH="${KAFKA_HOME}/bin:${PATH}"
 
-# Set paths
-ENV PATH=/opt/spark/bin:/opt/kafka/bin:/opt/hive/bin:$PATH
-
-# Python packages
+# Install Python packages
 RUN pip3 install jupyter pandas kafka-python confluent-kafka
 
 # SSH setup
-RUN ssh-keygen -t rsa -P '' -f ~/.ssh/id_rsa && \
-    cat ~/.ssh/id_rsa.pub >> ~/.ssh/authorized_keys && \
-    chmod 600 ~/.ssh/authorized_keys
+RUN mkdir -p /root/.ssh && \
+    ssh-keygen -t rsa -P '' -f /root/.ssh/id_rsa && \
+    cat /root/.ssh/id_rsa.pub >> /root/.ssh/authorized_keys && \
+    chmod 600 /root/.ssh/authorized_keys
 
+# Copy startup script
 COPY start-services.sh /usr/local/bin/
 RUN chmod +x /usr/local/bin/start-services.sh
 
-EXPOSE 9870 8088 4040 10000 9092 2181
+# Expose ports:
+# 9092 - Kafka
+# 4040 - Spark UI
+EXPOSE 9092 4040
 
 CMD ["/usr/local/bin/start-services.sh"]
