@@ -20,7 +20,7 @@ RUN wget https://dlcdn.apache.org/hadoop/common/hadoop-${HADOOP_VERSION}/hadoop-
     mv /opt/hadoop-${HADOOP_VERSION} ${HADOOP_HOME} && \
     rm hadoop-${HADOOP_VERSION}.tar.gz
 
-# Install Spark (using archive.apache.org for stability)
+# Install Spark - FIXED URL
 ENV SPARK_VERSION=3.5.0
 ENV SPARK_HOME=/opt/spark
 RUN wget https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.tgz && \
@@ -53,7 +53,7 @@ ENV HADOOP_CLASSPATH=$HADOOP_HOME/share/hadoop/tools/lib/*:$HADOOP_CLASSPATH
 RUN rm -f $HIVE_HOME/lib/guava-19.0.jar && \
     cp $HADOOP_HOME/share/hadoop/hdfs/lib/guava-27.0-jre.jar $HIVE_HOME/lib/
 
-# Download Spark-Kafka connector (matching Spark 3.5.0)
+# Download Spark-Kafka connector
 RUN cd $SPARK_HOME/jars && \
     wget https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.12/3.5.0/spark-sql-kafka-0-10_2.12-3.5.0.jar && \
     wget https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/3.4.1/kafka-clients-3.4.1.jar && \
@@ -73,10 +73,6 @@ RUN chmod +x /usr/local/bin/start-services.sh
 RUN pip3 install pyspark jupyter pandas kafka-python confluent-kafka
 
 # Expose ports
-# Hadoop: 9870 (NameNode), 8088 (YARN)
-# Spark: 4040 (UI)
-# Hive: 10000 (HiveServer2), 10002 (WebUI)
-# Kafka: 9092 (Broker), 2181 (Zookeeper)
 EXPOSE 9870 8088 4040 10000 10002 9092 2181
 
 CMD ["/usr/local/bin/start-services.sh"]
