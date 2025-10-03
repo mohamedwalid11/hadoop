@@ -20,7 +20,7 @@ RUN wget https://archive.apache.org/dist/hadoop/common/hadoop-${HADOOP_VERSION}/
     mv /opt/hadoop-${HADOOP_VERSION} ${HADOOP_HOME} && \
     rm hadoop-${HADOOP_VERSION}.tar.gz
 
-# Install Spark (using archive URL for reliability)
+# Install Spark - using archive.apache.org which is more reliable
 ENV SPARK_VERSION=3.5.1
 ENV SPARK_HOME=/opt/spark
 RUN wget https://archive.apache.org/dist/spark/spark-${SPARK_VERSION}/spark-${SPARK_VERSION}-bin-hadoop3.tgz && \
@@ -37,7 +37,7 @@ RUN wget https://archive.apache.org/dist/hive/hive-${HIVE_VERSION}/apache-hive-$
     rm apache-hive-${HIVE_VERSION}-bin.tar.gz
 
 # Install Kafka
-ENV KAFKA_VERSION=3.7.0
+ENV KAFKA_VERSION=3.6.1
 ENV SCALA_VERSION=2.13
 ENV KAFKA_HOME=/opt/kafka
 RUN wget https://archive.apache.org/dist/kafka/${KAFKA_VERSION}/kafka_${SCALA_VERSION}-${KAFKA_VERSION}.tgz && \
@@ -56,7 +56,7 @@ RUN rm -f $HIVE_HOME/lib/guava-19.0.jar && \
 # Download Spark-Kafka connector
 RUN cd $SPARK_HOME/jars && \
     wget https://repo1.maven.org/maven2/org/apache/spark/spark-sql-kafka-0-10_2.12/3.5.1/spark-sql-kafka-0-10_2.12-3.5.1.jar && \
-    wget https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/3.4.1/kafka-clients-3.4.1.jar && \
+    wget https://repo1.maven.org/maven2/org/apache/kafka/kafka-clients/3.6.1/kafka-clients-3.6.1.jar && \
     wget https://repo1.maven.org/maven2/org/apache/commons/commons-pool2/2.11.1/commons-pool2-2.11.1.jar
 
 # Setup SSH (required for Hadoop)
