@@ -1,10 +1,28 @@
 {
-  "name": "Hadoop Spark Hive Kafka Environment",
-  "build": {
-    "dockerfile": "../docker/Dockerfile",
-    "context": "../docker"
+  "name": "Kafka+Spark+Hive",
+  "dockerComposeFile": "docker-compose.yml",
+  "service": "spark-master",
+  "workspaceFolder": "/workspace",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "ms-toolsai.jupyter",
+        "redhat.java",
+        "ms-vscode.vscode-typescript-next"
+      ]
+    }
   },
-  "forwardPorts": [9870, 8088, 4040, 10000, 10002, 9092, 2181],
-  "postStartCommand": "bash -c 'sudo /usr/local/bin/start-services.sh || true'",
-  "remoteUser": "root"
+  "postCreateCommand": "chmod +x setup.sh && ./setup.sh",
+  "portsAttributes": {
+    "8080": {
+      "label": "Spark UI"
+    },
+    "9092": {
+      "label": "Kafka"
+    },
+    "10000": {
+      "label": "HiveServer2"
+    }
+  }
 }
