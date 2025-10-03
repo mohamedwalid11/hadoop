@@ -1,21 +1,12 @@
 {
   "name": "Kafka+Spark+Hive",
   "dockerComposeFile": "docker-compose.yml",
-  "service": "workspace",
+  "service": "app",
   "workspaceFolder": "/workspace",
   "customizations": {
     "vscode": {
-      "extensions": [
-        "ms-python.python",
-        "ms-toolsai.jupyter"
-      ]
+      "extensions": ["ms-python.python"]
     }
   },
-  "postCreateCommand": "echo '✅ Setup complete! Run: docker-compose up -d'",
-  "portsAttributes": {
-    "8080": {"label": "Spark UI"},
-    "9092": {"label": "Kafka"},
-    "10000": {"label": "HiveServer2"},
-    "9083": {"label": "Hive Metastore"}
-  }
+  "postCreateCommand": "pip install kafka-python pyspark pyhive"
 }
