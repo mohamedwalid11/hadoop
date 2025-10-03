@@ -2,7 +2,7 @@
   "name": "Hadoop Spark Hive Kafka Environment",
   "build": {
     "dockerfile": "../docker/Dockerfile",
-    "context": ".."
+    "context": "../docker"
   },
   "forwardPorts": [9870, 8088, 4040, 10000, 10002, 9092, 2181],
   "postStartCommand": "bash -c 'sudo /usr/local/bin/start-services.sh || true'",
